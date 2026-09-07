@@ -1655,8 +1655,9 @@
           setMessages((m) => [...m, { role: "user", text: q }]);
           setPending(true);
           let data;
+          let res;
           try {
-            const res = await fetch(API + "/chat", {
+            res = await fetch(API + "/chat", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ query: q }),
@@ -1664,9 +1665,16 @@
             if (!res.ok) throw new Error(res.status);
             data = await res.json();
           } catch (e) {
+            let detail =
+              "Backend RAG tidak dapat dihubungi. Periksa status deployment Railway dan coba lagi.";
+            try {
+              const errorData = await res?.json();
+              if (errorData?.detail) detail = errorData.detail;
+            } catch (_) {
+              // Respons non-JSON tetap memakai pesan umum.
+            }
             data = {
-              answer:
-                "Backend RAG tidak dapat dihubungi. Periksa status deployment Railway dan coba lagi.",
+              answer: detail,
               sources: [],
             };
             setSample(true);

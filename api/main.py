@@ -5,6 +5,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+from google.genai.errors import ClientError
 
 from . import security
 from . import db
@@ -132,4 +133,16 @@ def chat(req: ChatRequest):
     if ip_match:
         host_data = db.get_host(ip_match.group(0))
 
-    return _rag_engine.answer(req.query, host_data=host_data)
+    try:
+        return _rag_engine.answer(req.query, host_data=host_data)
+    except ClientError as exc:
+        if getattr(exc, "code", None) == 429 or "RESOURCE_EXHAUSTED" in str(exc):
+            raise HTTPException(
+                status_code=429,
+                detail=(
+                    "Kuota Gemini sedang habis. Tunggu sesuai retry delay "
+                    "dari Gemini atau gunakan project/API key dengan billing."
+                ),
+                headers={"Retry-After": "60"},
+            ) from exc
+        raise
