@@ -1,2 +1,6 @@
 [deploy]
-startCommand = "python corpus/build_attack.py && python corpus/build_corpus.py && python corpus/indexer.py && uvicorn api.main:app --host 0.0.0.0 --port $PORT"
+startCommand = "SENTINELOPS_DB=/data/sentinelops.db python scripts/start_railway.py"
+healthcheckPath = "/health"
+
+[volumes]
+"/data" = "sentinelops-data"

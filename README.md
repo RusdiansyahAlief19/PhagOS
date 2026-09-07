@@ -121,6 +121,18 @@ uvicorn api.main:app --reload --port 8000
 
 Dokumentasi OpenAPI tersedia di `http://localhost:8000/docs`.
 
+### Deployment Railway
+
+`railway.toml` menjalankan `scripts/start_railway.py`. Saat deploy pertama atau
+setelah artefak index hilang, script tersebut membangun FAISS/BM25 dari
+`corpus/chunks.json`; `GEMINI_API_KEY` wajib tersedia sebagai Railway variable.
+Deploy berikutnya melewati rebuild jika artefaknya masih ada di filesystem.
+
+SQLite disimpan pada volume Railway `/data` melalui `SENTINELOPS_DB`, sehingga
+database tidak hilang saat container di-redeploy. Volume tidak berisi data
+laptop secara otomatis: jalankan `agent\shipper.py` lagi untuk mengirim
+`eve.json`, lalu jalankan `api\scoring.py` untuk mengisi tabel host dan skor.
+
 Jalankan dashboard sederhana pada terminal lain:
 
 ```powershell
