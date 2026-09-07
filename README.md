@@ -1,7 +1,7 @@
-# SentinelOps
+# PhagOS
 
 **Virtual SOC Analyst** untuk kampus, UMKM, dan instansi daerah yang memiliki
-sensor jaringan tetapi belum memiliki tim SOC khusus. SentinelOps menjadi
+sensor jaringan tetapi belum memiliki tim SOC khusus. PhagOS menjadi
 lapisan analitik di atas Suricata: log `eve.json` dikumpulkan, diringkas menjadi
 prioritas risiko per host, lalu dijelaskan dalam Bahasa Indonesia melalui
 chatbot RAG dengan sitasi.
@@ -11,7 +11,7 @@ Dibangun untuk HoloDev, HOLOGY 9.0 (Universitas Brawijaya), subtema
 
 ## Konsep dan fitur utama
 
-SentinelOps menggunakan arsitektur **dual-engine**:
+PhagOS menggunakan arsitektur **dual-engine**:
 
 1. **Statistical Risk Scoring** membandingkan traffic terbaru dengan baseline
    historis menggunakan percentile scoring pada enam fitur perilaku jaringan.
@@ -54,7 +54,7 @@ Log Shipper -- HMAC --> FastAPI (/ingest)
 ## Struktur project
 
 ```text
-sentinelops/
+PhagOS/
 ├── api/                         Backend FastAPI dan logika analitik
 │   ├── main.py                 Endpoint API dan integrasi dashboard
 │   ├── db.py                   Skema dan query SQLite terparameterisasi
@@ -85,8 +85,8 @@ Prasyarat: Python 3.10+, Gemini API key, dan dependensi pada
 `requirements.txt`.
 
 ```powershell
-git clone https://github.com/RusdiansyahAlief19/SentinelOps.git
-cd SentinelOps
+git clone https://github.com/RusdiansyahAlief19/PhagOS.git
+cd PhagOS
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
@@ -96,7 +96,7 @@ Buat `.env` di root:
 
 ```dotenv
 GEMINI_API_KEY=isi_key_anda
-SENTINELOPS_HMAC_SECRET=ganti_dengan_secret_acak
+PhagOS_HMAC_SECRET=ganti_dengan_secret_acak
 ```
 
 Siapkan corpus dan index:
@@ -137,7 +137,7 @@ Buka `http://localhost:5500`. URL backend dikonfigurasi pada konstanta `API` di
 python agent\shipper.py `
   --eve-path C:\path\ke\eve.json `
   --api-url http://127.0.0.1:8000/ingest `
-  --secret $env:SENTINELOPS_HMAC_SECRET `
+  --secret $env:PhagOS_HMAC_SECRET `
   --exit-when-caught-up
 ```
 
