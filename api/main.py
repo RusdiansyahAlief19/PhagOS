@@ -51,8 +51,10 @@ def serve_frontend():
 def health():
     hosts = db.get_hosts()
     return {
-        "status": "ok",
+        "status": "ok" if _rag_engine is not None else "degraded",
         "hosts_tracked": len(hosts),
+        "rag_ready": _rag_engine is not None,
+        "rag_error": _rag_error,
     }
 
 @app.post("/ingest", dependencies=[Depends(security.verify_hmac_signature)])

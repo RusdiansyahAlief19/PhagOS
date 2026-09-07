@@ -4,6 +4,7 @@ from contextlib import contextmanager
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.environ.get("SENTINELOPS_DB", os.path.join(HERE, "sentinelops.db"))
+DB_DIR = os.path.dirname(os.path.abspath(DB_PATH))
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS events (
@@ -52,6 +53,7 @@ CREATE INDEX IF NOT EXISTS idx_scores_ip ON scores(ip);
 
 
 def get_connection():
+    os.makedirs(DB_DIR, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")

@@ -131,8 +131,8 @@
     <script type="text/babel">
       const { useState, useEffect, useCallback, useRef } = React;
 
-      /* ── Ganti satu baris ini saat deploy ─────────────────────────────── */
-      const API = "https://sentinelops-production-43f5.up.railway.app";
+      /* Backend disajikan oleh service yang sama dengan dashboard. */
+      const API = window.location.origin;
       const REFRESH_SECONDS = 60;
 
       /* ── Tiga warna status, konsisten di seluruh aplikasi ─────────────── */
@@ -1664,7 +1664,11 @@
             if (!res.ok) throw new Error(res.status);
             data = await res.json();
           } catch (e) {
-            data = SAMPLE_CHAT;
+            data = {
+              answer:
+                "Backend RAG tidak dapat dihubungi. Periksa status deployment Railway dan coba lagi.",
+              sources: [],
+            };
             setSample(true);
           }
           setPending(false);
