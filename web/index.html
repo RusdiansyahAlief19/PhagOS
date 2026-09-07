@@ -130,12 +130,9 @@
 
     <script type="text/babel">
       const { useState, useEffect, useCallback, useRef } = React;
-
-      /* ── Ganti satu baris ini saat deploy ─────────────────────────────── */
-      const API = "https://sentinelops-production-1a85.up.railway.app";
+      const API = window.location.origin;
       const REFRESH_SECONDS = 60;
 
-      /* ── Tiga warna status, konsisten di seluruh aplikasi ─────────────── */
       const STATUS = {
         Aman: { color: "#5fae86", tint: "#1e2f28" },
         Perhatian: { color: "#d3ac5c", tint: "#302819" },
@@ -144,7 +141,6 @@
       const bandOf = (b) => STATUS[b] || STATUS["Aman"];
       const MONO = "var(--font-mono)";
 
-      /* ── Data contoh: dipakai hanya kalau API tidak terjangkau ────────── */
       const SAMPLE_ASSETS = {
         hosts: [
           {
@@ -1655,8 +1651,9 @@
           setMessages((m) => [...m, { role: "user", text: q }]);
           setPending(true);
           let data;
+          let res;
           try {
-            const res = await fetch(API + "/chat", {
+            res = await fetch(API + "/chat", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ query: q }),
@@ -1664,7 +1661,18 @@
             if (!res.ok) throw new Error(res.status);
             data = await res.json();
           } catch (e) {
-            data = SAMPLE_CHAT;
+            let detail =
+              "Backend RAG tidak dapat dihubungi. Periksa status deployment Railway dan coba lagi.";
+            try {
+              const errorData = await res?.json();
+              if (errorData?.detail) detail = errorData.detail;
+            } catch (_) {
+              // Respons non-JSON tetap memakai pesan umum.
+            }
+            data = {
+              answer: detail,
+              sources: [],
+            };
             setSample(true);
           }
           setPending(false);
